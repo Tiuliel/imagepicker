@@ -43,6 +43,17 @@ export default function App() {
       <StatusBar style="auto" />
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Button title="Escolher foto" onPress={escolherFoto} />
+
+        {foto ? (
+          <Image
+            style={{ width: 300, height: 300 }}
+            source={foto}
+            contentFit="cover"
+          />
+        ) : (
+          <Text>Sem foto!</Text>
+        )}
+
         <Image style={{ width: 300, height: 300 }} />
       </View>
     </>
