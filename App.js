@@ -1,30 +1,31 @@
 import { Button, Image, StatusBar, View, Text } from "react-native";
 import { useState, useEffect } from "react";
- 
+
 /* IMportando so recursos da API nativa/móvel */
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
- 
+import * as Sharing from "expo-sharing";
+
 export default function App() {
   /* State tradicional para armazenar a referência da foto (quando existir) */
   const [foto, setFoto] = useState(null);
   /* State de checagem de permissões de uso (através do hook useCameraPermissions) */
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
- 
+
   console.log(status);
- 
+
   /* Ao entrar no app, será executada a verificação de permissões de uso */
   useEffect(() => {
     /* Esta função mostrará um popup para o usuário perguntando se ele autoriza a utilização do recurso móvel (no caso, selecionar/tirar foto). */
     async function verificaPermissoes() {
       const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
- 
+
       /* Ele dando autorização (granted), isso será armazenado no state de requestPermission */
       requestPermission(cameraStatus === "granted");
     }
     verificaPermissoes();
   }, []);
- 
+
   /* Ao pressionar o botão, excecuta esta função */
   const escolherFoto = async () => {
     /* Acessando via ImagePicker a biblioteca
@@ -36,15 +37,19 @@ export default function App() {
       aspect: [16, 9],
       quality: 1,
     });
- 
+
     /* Se o usuário não cancelar a operação, pegamos a
     imagem e colocamos no state */
     if (!resultado.canceled) {
       setFoto(resultado.assets[0].uri);
     }
   };
-  console.log(foto);
- 
+
+  const compartilharFoto = async () => {
+    Sharing.isAvailableAsync();
+    Sharing.shareAsync("foto");
+  };
+
   const acessarCamera = async () => {
     /* Ao executar esta função quando o usuário escolhe
     tirar uma foto, utilizamos o launchCameraAsync para
@@ -54,7 +59,7 @@ export default function App() {
       aspect: [16, 9],
       quality: 0.5,
     });
- 
+
     /* Se o usuário não cancelar, atualizamos o state
     com a nova foto capturada */
     if (!imagem.canceled) {
@@ -64,14 +69,14 @@ export default function App() {
       setFoto(imagem.assets[0].uri);
     }
   };
- 
+
   return (
     <>
       <StatusBar style="auto" />
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Button title="Escolher foto" onPress={escolherFoto} />
         <Button title="Tirar uma nova foto" onPress={acessarCamera} />
- 
+
         {foto ? (
           <Image
             style={{ width: 300, height: 300 }}
@@ -81,6 +86,8 @@ export default function App() {
         ) : (
           <Text>Sem foto!</Text>
         )}
+
+        {foto && <Button title="Compartilhar" onPress={compartilharFoto} />}
       </View>
     </>
   );
