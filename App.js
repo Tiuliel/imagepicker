@@ -1,4 +1,4 @@
-import { Button, Image, StatusBar, View } from "react-native";
+import { Button, Image, StatusBar, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 
 /* IMportando so recursos da API nativa/móvel */
@@ -36,13 +36,24 @@ export default function App() {
       setFoto(resultado.assets[0].uri);
     }
   };
-  console.log(foto);
+
+  const acessarCamera = async () => {
+    const imagem = await ImagePicker.launchCameraAsync({
+      allowsEditing: false,
+      aspect: [16, 9],
+      quality: 0.5,
+    });
+    if (imagem.canceled) {
+      setFoto(imagem.assets[0].uri);
+    }
+  };
 
   return (
     <>
       <StatusBar style="auto" />
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Button title="Escolher foto" onPress={escolherFoto} />
+        <Button onPress={escolherFoto} title="Escolher foto" />
+        <Button onPress={acessarCamera} title="Tirar uma nova foto" />
 
         {foto ? (
           <Image
